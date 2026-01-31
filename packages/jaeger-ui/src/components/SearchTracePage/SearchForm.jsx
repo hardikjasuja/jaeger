@@ -632,7 +632,7 @@ export class SearchFormImpl extends React.PureComponent {
           disabled={submitting || noSelectedService || invalid || invalidDuration}
           data-test={markers.SUBMIT_BTN}
         >
-          Find Traces
+          Find Traces (local)
         </Button>
       </Form>
     );
