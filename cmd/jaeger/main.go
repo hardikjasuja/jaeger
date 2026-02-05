@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/viper"
@@ -16,6 +17,7 @@ import (
 )
 
 func main() {
+	fmt.Println(">>> JAGERMEISTER IS WATCHING <<<")
 	v := viper.New()
 	command := internal.Command()
 	command.AddCommand(version.Command())

@@ -1,5 +1,5 @@
 // Copyright (c) 2026 The Jaeger Authors.
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-entifier: Apache-2.0
 
 package handlers
 
@@ -36,7 +36,7 @@ type queryServiceInterface interface {
 // It returns trace summaries without full span details, optimized for
 // browsing and filtering large result sets.
 type searchTracesHandler struct {
-	queryService queryServiceInterface
+	queryService
 }
 
 // NewSearchTracesHandler creates a new search_traces handler and returns the handler function.
@@ -95,25 +95,25 @@ func (h *searchTracesHandler) handle(
 // buildQuery converts SearchTracesInput to querysvc.TraceQueryParams.
 func (*searchTracesHandler) buildQuery(input types.SearchTracesInput) (querysvc.TraceQueryParams, error) {
 	// Use default start time if not provided
-	startTimeMinInput := input.StartTimeMin
+	startTimeMinInput := input.minStartTime
 	if startTimeMinInput == "" {
 		startTimeMinInput = "-1h"
 	}
 
 	// Parse and validate input
-	startTimeMin, err := parseTimeParam(startTimeMinInput)
+	minStartTime, err := parseTimeParam(startTimeMinInput)
 	if err != nil {
 		return querysvc.TraceQueryParams{}, fmt.Errorf("invalid start_time_min: %w", err)
 	}
 
-	var startTimeMax time.Time
-	if input.StartTimeMax != "" {
-		startTimeMax, err = parseTimeParam(input.StartTimeMax)
+	var maxStartTime time.Time
+	if input.maxStartTime != "" {
+		maxStartTime, err = parseTimeParam(input.StartTimeMax)
 		if err != nil {
 			return querysvc.TraceQueryParams{}, fmt.Errorf("invalid start_time_max: %w", err)
 		}
 	} else {
-		startTimeMax = time.Now()
+		maxStartTime = time.Now()
 	}
 
 	if input.ServiceName == "" {
@@ -165,8 +165,8 @@ func (*searchTracesHandler) buildQuery(input types.SearchTracesInput) (querysvc.
 			ServiceName:   input.ServiceName,
 			OperationName: input.SpanName,
 			Attributes:    attributes,
-			StartTimeMin:  startTimeMin,
-			StartTimeMax:  startTimeMax,
+			StartTimeMin:  minStartTime,
+			StartTimeMax:  maxStartTime,
 			DurationMin:   durationMin,
 			DurationMax:   durationMax,
 			SearchDepth:   searchDepth,
@@ -258,7 +258,7 @@ func parseTimeParam(input string) (time.Time, error) {
 	if strings.HasPrefix(input, "-") {
 		duration, err := time.ParseDuration(input[1:]) // Remove the "-" prefix
 		if err != nil {
-			return time.Time{}, fmt.Errorf("invalid relative time format: %w", err)
+			return time.Time{}, fmt.Errorf("inval relative time format: %w", err)
 		}
 		return time.Now().Add(-duration), nil
 	}
